@@ -1,118 +1,122 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
+import React from "react";
+import CountryCard from "@/components/Country/CountryCard";
+import PageTransition from "@/components/PageTransition";
+import { Country } from "@/services/CountryService";
 
-const inter = Inter({ subsets: ['latin'] })
+interface IHomeProps {
+  countries: Country[] | null;
+}
 
-export default function Home() {
+export default function Home({ countries }: IHomeProps) {
+  const [search, setSearch] = React.useState("");
+  const [regionFilter, setRegionFilter] = React.useState("");
+
+  const filteredCountries = React.useMemo(() => {
+    if (!search && !regionFilter) return countries;
+
+    return countries
+      ?.filter((country) => {
+        if (!search) return true;
+        return [country.name.common, country.name.official]
+          .join(" ")
+          .toLowerCase()
+          .includes(search.toLowerCase());
+      })
+      .filter((country) => {
+        if (!regionFilter) return true;
+        return country.region === regionFilter;
+      })
+      .sort((a, b) => a.name.common.localeCompare(b.name.common));
+  }, [search, countries, regionFilter]);
+
+  const regions = React.useMemo(() => {
+    const unique = [...new Set(countries?.map((country) => country.region))];
+
+    return unique.sort((a, b) => a.localeCompare(b));
+  }, [countries]);
+
+  console.log({ filteredCountries });
+
   return (
-    <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
-    >
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/pages/index.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <PageTransition>
+      <div className="flex justify-between mb-12 relative">
+        <div className="w-full text-black dark:text-white flex items-center gap-6">
+          <input
+            type="search"
+            placeholder="Search for a country..."
+            className="bg-white shadow-sm pl-16 max-w-[480px]"
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 18 18"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="absolute left-8 top-1/2 transform -translate-y-1/2"
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+            <g id="search">
+              <path
+                id="Shape"
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M12.5 11H11.7L11.4 10.7C12.4 9.6 13 8.1 13 6.5C13 2.9 10.1 0 6.5 0C2.9 0 0 2.9 0 6.5C0 10.1 2.9 13 6.5 13C8.1 13 9.6 12.4 10.7 11.4L11 11.7V12.5L16 17.5L17.5 16L12.5 11ZM6.5 11C4 11 2 9 2 6.5C2 4 4 2 6.5 2C9 2 11 4 11 6.5C11 9 9 11 6.5 11Z"
+                fill="#848484"
+              ></path>
+            </g>
+          </svg>
+          <div>
+            <strong>{filteredCountries?.length}</strong> Countries Found
+          </div>
+        </div>
+        <div className="min-w-[200px]">
+          <select
+            className="w-full"
+            onChange={(e) => setRegionFilter(e.target.value)}
+          >
+            <option value="" key={10}>
+              Filter by Region
+            </option>
+            {regions?.map((region, i) => (
+              <option value={region} key={i}>
+                {region} (
+                {
+                  countries?.filter((country) => country.region === region)
+                    .length
+                }
+                )
+              </option>
+            ))}
+          </select>
         </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+      <div className="grid grid-cols-4 gap-24">
+        {filteredCountries?.map((country, i) => (
+          <CountryCard country={country} key={i} />
+        ))}
       </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Discover and deploy boilerplate example Next.js&nbsp;projects.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    </PageTransition>
+  );
 }
+
+export const getServerSideProps = async () => {
+  /**
+   * Fields:
+   * flags
+   * name
+   * capital
+   * region
+   * population
+   */
+
+  const countries =
+    (await fetch(
+      `https://restcountries.com/v3.1/all?fields=flags,name,capital,region,population`
+    )) || null;
+
+  return {
+    props: {
+      countries: await countries.json(),
+    },
+  };
+};
