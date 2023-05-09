@@ -1,5 +1,3 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 # Country Browser
 This is a simple Next.js app that allows you to browse basic country data. It uses the [REST Countries API](https://restcountries.eu/) to fetch the data.
 
@@ -35,6 +33,13 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ```bash
 npm run test
 ```
+
+## Linting
+  
+  ```bash 
+  npm run lint
+  ```
+
 
 ## Deployment
 Deployments and builds happen automatically when commits are pushed to main. The app is deployed on Vercel and can be viewed at https://countries-evanagee.vercel.app.

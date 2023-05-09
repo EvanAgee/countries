@@ -9,7 +9,10 @@ export interface ICountryCardProps {
 
 export default function CountryCard({ country }: ICountryCardProps) {
   return (
-    <Link href={`/${country.name.common}`}>
+    <Link
+      href={`/${country.name.common}`}
+      className="transition-transform transform hover:-translate-y-4"
+    >
       <article className="bg-white dark:bg-dark-gray-400 shadow-lg rounded-md overflow-hidden text-black dark:text-white hover:shadow-sm transition-shadow duration-300">
         <figure
           className="relative w-full aspect-[264/160] overflow-hidden bg-cover bg-center rounded-t-md"
