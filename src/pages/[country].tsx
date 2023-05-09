@@ -153,7 +153,7 @@ export default function CountryPage({ country }: ICountryPageProps) {
 export const getServerSideProps = async (context: any) => {
   try {
     const { country } = context.params;
-    let c = await getCountry(country);
+    let c: Country = await getCountry(country);
     c = await getBorderCountries(c);
 
     return {

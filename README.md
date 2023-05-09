@@ -11,6 +11,14 @@ This is a simple Next.js app that allows you to browse basic country data. It us
 - Responsive design
 - Server-side rendering
 
+## Tech Stack
+- Next.js / React
+- TypeScript
+- TailwindCSS
+- Jest / React Testing Library
+- ESLint / Prettier
+- Framer Motion
+- Vercel
 
 ## Getting Started
 
@@ -27,3 +35,6 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ```bash
 npm run test
 ```
+
+## Deployment
+Deployments and builds happen automatically when commits are pushed to main. The app is deployed on Vercel and can be viewed at https://countries-evanagee.vercel.app.
