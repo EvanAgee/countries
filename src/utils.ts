@@ -1,4 +1,4 @@
-export const slugify = (str) => {
+export const slugify = (str: string) => {
   if (!str) return str;
 
   return str

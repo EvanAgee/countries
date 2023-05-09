@@ -14,7 +14,8 @@ export interface Country {
   subregion: string;
   population: number;
   area: number;
-  borders: string[];
+  borders?: string[] | undefined;
+  fullBorders?: Country[] | undefined;
   flags: {
     svg: string;
     png: string;
@@ -41,8 +42,28 @@ export interface Country {
   };
 }
 
-export const getCountry = async (name: string): Promise<Country> => {
-  const response = await fetch(`https://restcountries.com/v3.1/name/${name}`);
+export const getCountry = async (
+  name: string,
+  type: "name" | "code" = "name"
+): Promise<Country> => {
+  const response =
+    type === "name"
+      ? await fetch(`https://restcountries.com/v3.1/name/${name}`)
+      : await fetch(`https://restcountries.com/v3.1/alpha/${name}`);
   const [country] = await response.json();
   return country;
+};
+
+export const getBorderCountries = async (
+  country: Country
+): Promise<Country> => {
+  if (!country.borders) return country;
+  const response = await fetch(
+    `https://restcountries.com/v3.1/alpha?codes=${country.borders.join(",")}`
+  );
+  const countries = await response.json();
+  return {
+    ...country,
+    fullBorders: countries,
+  };
 };

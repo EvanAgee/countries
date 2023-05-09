@@ -20,18 +20,18 @@ export default function AppLayout({ children }: IAppLayoutProps) {
       className={classNames(
         `flex flex-col ${font.className} bg-[#F2F2F2]  min-h-screen transition-colors`,
         {
-          "dark !bg-dark-gray-500": darkModeActive,
-          "!bg-white": router.route == "/[country]",
+          "dark bg-dark-gray-500": darkModeActive,
+          "lg:bg-white": router.route == "/[country]" && !darkModeActive,
         }
       )}
     >
-      <header className="bg-white dark:bg-dark-gray-400 text-black dark:text-white font-extrabold text-2xl py-5 flex justify-between transition-colors shadow-sm">
+      <header className="bg-white dark:bg-dark-gray-400 text-black dark:text-white font-extrabold text-2xl py-5 flex justify-between transition-colors shadow-sm px-6">
         <div className="container flex justify-between">
           <Link href="/">
-            <h1>Where in the world?</h1>
+            <h1 className="text-lg lg:text-3xl">Where in the world?</h1>
           </Link>
           <button
-            className="flex items-center font-semibold text-base"
+            className="flex items-center font-semibold text-xs lg:text-base"
             onClick={() => {
               localStorage.setItem("darkMode", `${!darkModeActive}`);
               toggleDark(!darkModeActive);

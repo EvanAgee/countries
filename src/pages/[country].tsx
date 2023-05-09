@@ -5,7 +5,11 @@ import * as React from "react";
 import PageTransition from "@/components/PageTransition";
 import Button from "@/components/Button/Button";
 import { useRouter } from "next/router";
-import { Country, getCountry } from "@/services/CountryService";
+import {
+  Country,
+  getBorderCountries,
+  getCountry,
+} from "@/services/CountryService";
 
 export interface ICountryPageProps {
   country: Country;
@@ -61,7 +65,7 @@ export default function CountryPage({ country }: ICountryPageProps) {
   return (
     <PageTransition>
       <Button
-        className="min-w-[136px] lg:mb-20 flex items-center justify-center"
+        className="min-w-[136px] ml-6 mb-12 lg:mb-20 flex items-center justify-center shadow-[0px_0px_7px_rgba(0,_0,_0,_0.293139)] lg:shadow-none rounded-[2px]"
         onClick={() => router.back()}
       >
         <svg
@@ -84,25 +88,28 @@ export default function CountryPage({ country }: ICountryPageProps) {
         </svg>
         Back
       </Button>
-      <div className="flex items-center lg:gap-[120px] text-base">
-        <div className="w-[560px]">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:gap-[120px] text-base px-6 pb-24">
+        <div className="lg:w-[560px]">
           <Image
             src={country.flags.svg}
             alt={country.name.common}
             width="560"
             height="560"
-            className="w-full h-auto object-cover rounded-xl shadow-xl"
+            className="w-full h-auto object-cover rounded-xl shadow-xl mb-12 lg:mb-0"
           />
         </div>
         <div className="flex-grow">
-          <h1 className="text-4xl font-extrabold mb-6">
+          <h1 className="text-2xl lg:text-4xl font-extrabold mb-6">
             {country.name.common}
           </h1>
-          <ul className="grid grid-cols-2 gap-3 font-light lg:mb-16">
+          <ul className="grid lg:grid-cols-2 gap-3 font-light mb-12">
             {displayFields.map((field, i) => (
               <li
                 key={i}
-                className={i + 1 === displayFields.length ? "col-start-1" : ""}
+                className={classNames({
+                  "lg:col-start-1": i + 1 === displayFields.length,
+                  "mb-10 lg:mb-0": i === 3,
+                })}
               >
                 <strong className="font-medium">{field.label}:</strong>{" "}
                 {field.value}
@@ -110,18 +117,20 @@ export default function CountryPage({ country }: ICountryPageProps) {
             ))}
           </ul>
 
-          {country?.borders && (
-            <div className="flex items-start gap-6">
+          {country?.fullBorders && (
+            <div className="flex flex-col lg:flex-row items-start gap-6">
               <h4 className="font-semibold whitespace-nowrap">
                 Border Countries:
               </h4>
               <ul className="flex items-center flex-grow gap-2 flex-wrap">
-                {country?.borders?.map((border, i) => (
-                  <li
-                    key={i}
-                    className="dark:bg-dark-gray-400 min-w-[96px] flex justify-center"
-                  >
-                    {border}
+                {country?.fullBorders?.map((border, i) => (
+                  <li key={i}>
+                    <Button
+                      className="border-2 dark:bg-dark-gray-400 min-w-[96px] flex items-center justify-center px-3"
+                      href={`/${border.name.common}`}
+                    >
+                      {border.name.common}
+                    </Button>
                   </li>
                 ))}
               </ul>
@@ -135,7 +144,8 @@ export default function CountryPage({ country }: ICountryPageProps) {
 
 export const getServerSideProps = async (context: any) => {
   const { country } = context.params;
-  const c = await getCountry(country);
+  let c = await getCountry(country);
+  c = await getBorderCountries(c);
 
   return {
     props: {

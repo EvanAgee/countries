@@ -23,7 +23,6 @@ export const ThemeProvider: React.FC<IThemeProviderProps> = ({
     const storedDarkMode = localStorage.getItem("darkMode") || null;
     if (storedDarkMode !== null) {
       const darkMode = storedDarkMode === "true";
-      console.log({ darkMode, darkModeActive, storedDarkMode });
       if (darkMode !== darkModeActive) {
         toggleDark(darkMode);
       }
