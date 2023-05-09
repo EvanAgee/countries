@@ -40,6 +40,13 @@ export default function Home({ countries }: IHomeProps) {
       .sort((a, b) => a.localeCompare(b));
   }, [countries]);
 
+  if (!countries)
+    return (
+      <div className="flex items-center justify-center">
+        Unable to load countries from API.
+      </div>
+    );
+
   return (
     <PageTransition>
       <div className="flex lg:flex-row flex-col lg:justify-between mb-12 relative px-6">
@@ -72,7 +79,7 @@ export default function Home({ countries }: IHomeProps) {
           </div>
 
           <div className="min-w-[200px] hidden md:block">
-            <strong>{filteredCountries?.length}</strong> Countries Found
+            <strong>{filteredCountries?.length || 0}</strong> Countries Found
           </div>
         </div>
 
@@ -113,23 +120,25 @@ export default function Home({ countries }: IHomeProps) {
 }
 
 export const getServerSideProps = async () => {
-  /**
-   * Fields:
-   * flags
-   * name
-   * capital
-   * region
-   * population
-   */
+  try {
+    // Fetch all countries from the API but only include necessary fields to reduce payload size
+    const countries =
+      (await fetch(
+        `https://restcountries.com/v3.1/all?fields=flags,name,capital,region,population`
+      )) || null;
 
-  const countries =
-    (await fetch(
-      `https://restcountries.com/v3.1/all?fields=flags,name,capital,region,population`
-    )) || null;
-
-  return {
-    props: {
-      countries: await countries.json(),
-    },
-  };
+    return {
+      props: {
+        countries: await countries.json(),
+      },
+    };
+  } catch (error) {
+    // Handle error logging
+    console.log(error);
+    return {
+      props: {
+        countries: null,
+      },
+    };
+  }
 };

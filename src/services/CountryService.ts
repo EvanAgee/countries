@@ -42,6 +42,7 @@ export interface Country {
   };
 }
 
+// Fetches a country based on its name or country code.
 export const getCountry = async (
   name: string,
   type: "name" | "code" = "name"
@@ -54,6 +55,7 @@ export const getCountry = async (
   return country;
 };
 
+// Fetches an array of bordering countries based on their country codes.
 export const getBorderCountries = async (
   country: Country
 ): Promise<Country> => {

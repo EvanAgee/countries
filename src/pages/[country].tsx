@@ -16,10 +16,11 @@ export interface ICountryPageProps {
 }
 
 export default function CountryPage({ country }: ICountryPageProps) {
-  console.log({ country });
   const router = useRouter();
 
   const displayFields = React.useMemo(() => {
+    if (!country) return [];
+
     return [
       {
         label: "Native Name",
@@ -61,6 +62,13 @@ export default function CountryPage({ country }: ICountryPageProps) {
       },
     ];
   }, [country]);
+
+  if (!country)
+    return (
+      <div className="flex items-center justify-center">
+        Unable to find that country.
+      </div>
+    );
 
   return (
     <PageTransition>
@@ -143,13 +151,23 @@ export default function CountryPage({ country }: ICountryPageProps) {
 }
 
 export const getServerSideProps = async (context: any) => {
-  const { country } = context.params;
-  let c = await getCountry(country);
-  c = await getBorderCountries(c);
+  try {
+    const { country } = context.params;
+    let c = await getCountry(country);
+    c = await getBorderCountries(c);
 
-  return {
-    props: {
-      country: c,
-    },
-  };
+    return {
+      props: {
+        country: c,
+      },
+    };
+  } catch (error) {
+    // Handle error logging
+    console.log(error);
+    return {
+      props: {
+        country: null,
+      },
+    };
+  }
 };

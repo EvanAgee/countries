@@ -17,6 +17,7 @@ export default function AppLayout({ children }: IAppLayoutProps) {
 
   return (
     <div
+      data-testid="app-layout"
       className={classNames(
         `flex flex-col ${font.className} bg-[#F2F2F2]  min-h-screen transition-colors`,
         {
@@ -31,6 +32,7 @@ export default function AppLayout({ children }: IAppLayoutProps) {
             <h1 className="text-lg lg:text-3xl">Where in the world?</h1>
           </Link>
           <button
+            data-testid="dark-mode-button"
             className="flex items-center font-semibold text-xs lg:text-base"
             onClick={() => {
               localStorage.setItem("darkMode", `${!darkModeActive}`);
